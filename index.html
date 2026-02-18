@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .recipe-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Recipe App</h1>
+
+  <h2>Filter</h2>
+  <button onclick="setFilter('all')">All Recipes</button>
+  <button onclick="setFilter('easy')">Easy Recipes</button>
+  <button onclick="setFilter('medium')">Medium Recipes</button>
+  <button onclick="setFilter('hard')">Hard Recipes</button>
+  <button onclick="setFilter('quick')">Quick Recipes (Under 30 min)</button>
+
+  <h2>Sort</h2>
+  <button onclick="setSort('name')">Name (A–Z)</button>
+  <button onclick="setSort('time')">Time (Fastest First)</button>
+
+  <hr>
+
+  <div id="recipe-list"></div>
+
+  <script>
+    // =========================
+    // Original Data (Never Mutated)
+    // =========================
+    const recipes = [
+      { name: "Pasta", difficulty: "easy", time: 20 },
+      { name: "Lasagna", difficulty: "medium", time: 60 },
+      { name: "Beef Wellington", difficulty: "hard", time: 120 },
+      { name: "Salad", difficulty: "easy", time: 10 },
+      { name: "Chicken Curry", difficulty: "medium", time: 40 },
+      { name: "Omelette", difficulty: "easy", time: 15 }
+    ];
+
+    // =========================
+    // Application State
+    // =========================
+    let currentFilter = "all";
+    let currentSort = null;
+
+    // =========================
+    // Pure Filter Function
+    // =========================
+    const filterRecipes = (recipeList, filter) => {
+      switch (filter) {
+        case "easy":
+        case "medium":
+        case "hard":
+          return recipeList.filter(recipe => recipe.difficulty === filter);
+
+        case "quick":
+          return recipeList.filter(recipe => recipe.time < 30);
+
+        case "all":
+        default:
+          return recipeList;
+      }
+    };
+
+    // =========================
+    // Pure Sort Function
+    // =========================
+    const sortRecipes = (recipeList, sortType) => {
+      const sorted = [...recipeList]; // Copy array (avoid mutation)
+
+      switch (sortType) {
+        case "name":
+          return sorted.sort((a, b) => a.name.localeCompare(b.name));
+
+        case "time":
+          return sorted.sort((a, b) => a.time - b.time);
+
+        default:
+          return recipeList;
+      }
+    };
+
+    // =========================
+    // Render Function
+    // =========================
+    const renderRecipes = (recipeList) => {
+      const container = document.getElementById("recipe-list");
+
+      container.innerHTML = recipeList
+        .map(recipe => `
+          <div class="recipe-card">
+            <h3>${recipe.name}</h3>
+            <p>Difficulty: ${recipe.difficulty}</p>
+            <p>Time: ${recipe.time} minutes</p>
+          </div>
+        `)
+        .join("");
+    };
+
+    // =========================
+    // Central Update Function
+    // =========================
+    const updateDisplay = () => {
+      const filtered = filterRecipes(recipes, currentFilter);
+      const sorted = sortRecipes(filtered, currentSort);
+      renderRecipes(sorted);
+    };
+
+    // =========================
+    // Event Handlers
+    // =========================
+    const setFilter = (filter) => {
+      currentFilter = filter;
+      updateDisplay();
+    };
+
+    const setSort = (sortType) => {
+      currentSort = sortType;
+      updateDisplay();
+    };
+
+    // Initial Render
+    updateDisplay();
+
+  </script>
+  
+
+</body>
+</html>
